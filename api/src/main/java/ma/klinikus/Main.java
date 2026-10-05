@@ -1,10 +1,10 @@
 package ma.klinikus;
 
+import java.net.URI;
+
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-
-import java.net.URI;
 
 public class Main {
     public static final String BASE_URI = "http://localhost:8080/api/";
@@ -20,7 +20,7 @@ public class Main {
             System.out.println(String.format("Jersey app started at %s\nHit Ctrl+C to stop it...", BASE_URI));
             Thread.currentThread().join();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Erreur: " + e);
         }
     }
 }
