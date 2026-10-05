@@ -1,36 +1,26 @@
-
 package ma.klinikus;
 
-import com.sun.grizzly.http.SelectorThread;
-import com.sun.jersey.api.container.grizzly.GrizzlyWebContainerFactory;
-import java.io.IOException;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import javax.ws.rs.core.UriBuilder;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
 
+import java.net.URI;
 
 public class Main {
+    public static final String BASE_URI = "http://localhost:8080/api/";
 
-    public static final URI BASE_URI = UriBuilder.fromUri("http://localhost/").port(9998).build();
-
-    protected static SelectorThread startServer() throws IOException {
-        final Map<String, String> initParams = new HashMap<String, String>();
-
-        initParams.put("com.sun.jersey.config.property.packages", 
-                "ma.klinikus");
-
-        System.out.println("Starting grizzly...");
-        SelectorThread threadSelector = GrizzlyWebContainerFactory.create(BASE_URI, initParams);     
-        return threadSelector;
+    public static HttpServer startServer() {
+        final ResourceConfig rc = new ResourceConfig().packages("ma.klinikus.resource");
+        return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }
-    
-    public static void main(String[] args) throws IOException {
-        SelectorThread threadSelector = startServer();
-        System.out.println(String.format("Jersey app started with WADL available at "
-                + "%sapplication.wadl\nHit enter to stop it...",
-                BASE_URI));
-        System.in.read();
-        threadSelector.stopEndpoint();
-    }    
+
+    public static void main(String[] args) {
+        try {
+            final HttpServer server = startServer();
+            System.out.println(String.format("Jersey app started at %s\nHit Ctrl+C to stop it...", BASE_URI));
+            Thread.currentThread().join();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
