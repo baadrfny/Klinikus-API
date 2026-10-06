@@ -7,15 +7,15 @@
     <persistence-unit name="klinikusPU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         
-        <!-- Register your entities here -->
         <class>ma.klinikus.model.Specialiste</class>
+        <class>ma.klinikus.model.DemandeExpertise</class>
 
         <properties>
             <!-- PostgreSQL Database Connection -->
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/klinikus_db"/>
-            <property name="jakarta.persistence.jdbc.user" value="postgres"/>
-            <property name="jakarta.persistence.jdbc.password" value="your_password"/>
+            <property name="jakarta.persistence.jdbc.user" value="mohamed"/>
+            <property name="jakarta.persistence.jdbc.password" value="admin123"/>
 
             <!-- Hibernate Configuration -->
             <property name="hibernate.hbm2ddl.auto" value="update"/>
