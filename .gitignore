@@ -1,11 +1,7 @@
-<<<<<<< HEAD
-target/
-=======
 api/target/
->>>>>>> b2e13562cd7d1207e9afdbbdec991126fafa17e3
 *.class
 *.log
 .idea/
-*.iml
+*.xml
 .vscode/
 .env

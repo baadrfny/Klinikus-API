@@ -8,21 +8,31 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import ma.klinikus.model.Specialiste;
 import ma.klinikus.repository.SpecialisteRepository;
+import ma.klinikus.service.SpecialisteService;
 
 import java.util.List;
+import java.util.Map;
 
 @Path("/specialistes")
 public class SpecialisteResource {
 
-    private final SpecialisteRepository repository = new SpecialisteRepository();
+    private final SpecialisteService service = new SpecialisteService();
 
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getById(@PathParam("id") Long id){
-        return repository.findById(id).map(s -> Response.ok(s).build())
-                                      .orElse(Response.status(Response.Status.NOT_FOUND).build());
+    public Response getById(@PathParam("id") Long id) {
+        return service.trouverParId(id)
+                .map(s -> Response.ok(s).build())
+                .orElse(Response.status(Response.Status.NOT_FOUND)
+                        .entity(Map.of("message", "Specialiste introuvable")).build());
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response lister() {
+        List<Specialiste> specialistes = service.touverTous();
+        return Response.ok(specialistes).build();
+    }
 
 }
