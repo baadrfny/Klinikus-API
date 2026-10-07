@@ -77,7 +77,7 @@
     </dependencies>
 
     <build>
-        <finalName>api</finalName>
+        <finalName>klinikus</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

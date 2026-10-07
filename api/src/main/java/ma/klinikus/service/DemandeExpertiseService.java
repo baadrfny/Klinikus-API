@@ -3,15 +3,18 @@ package ma.klinikus.service;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 import ma.klinikus.model.DemandeExpertise;
+import ma.klinikus.model.Specialiste;
 import ma.klinikus.model.enums.Priorite;
 import ma.klinikus.model.enums.StatutDemande;
 import ma.klinikus.repository.DemandeExpertiseRepository;
+import ma.klinikus.repository.SpecialisteRepository;
 
 import java.util.Arrays;
 
 public class DemandeExpertiseService {
 
     private final DemandeExpertiseRepository demandeRepository = new DemandeExpertiseRepository();
+    private final SpecialisteRepository specialisteRepository = new SpecialisteRepository();
 
     public DemandeExpertise creer(CreerDemandeRequest req) {
         if (req == null)
@@ -28,8 +31,12 @@ public class DemandeExpertiseService {
         if (!demandeRepository.consultationExists(req.consultationId()))
             throw new NotFoundException("Consultation introuvable : " + req.consultationId());
 
+        Specialiste specialiste = specialisteRepository.findById(req.specialisteId())
+                .orElseThrow(() -> new NotFoundException("Spécialiste introuvable : " + req.specialisteId()));
+
         DemandeExpertise d = new DemandeExpertise();
         d.setConsultationId(req.consultationId());
+        d.setSpecialiste(specialiste);
         d.setQuestion(req.question().trim());
         d.setPriorite(priorite);
         d.setStatut(StatutDemande.EN_ATTENTE);
