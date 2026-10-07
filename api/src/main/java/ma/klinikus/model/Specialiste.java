@@ -1,4 +1,5 @@
-package ma.clinique.api.model;
+package ma.klinikus.model;
+import ma.klinikus.model.enums.Specialite;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -19,7 +20,7 @@ public class Specialiste {
     private Specialite specialite;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal tarif; // en DH
+    private BigDecimal tarif; 
 
     public Specialiste() {}
 
