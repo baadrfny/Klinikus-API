@@ -29,6 +29,13 @@
             <version>${jersey.version}</version>
         </dependency>
 
+        <!-- Bycrypt dependency -->
+        <dependency>
+            <groupId>at.favre.lib</groupId>
+            <artifactId>bcrypt</artifactId>
+            <version>0.10.2</version>
+        </dependency>
+
         <!-- JSON / Jackson -->
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
