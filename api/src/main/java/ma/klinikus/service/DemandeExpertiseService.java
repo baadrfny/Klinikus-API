@@ -1,1 +1,59 @@
 package ma.klinikus.service;
+
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotFoundException;
+import ma.klinikus.model.DemandeExpertise;
+import ma.klinikus.model.Specialiste;
+import ma.klinikus.model.enums.Priorite;
+import ma.klinikus.model.enums.StatutDemande;
+import ma.klinikus.repository.DemandeExpertiseRepository;
+import ma.klinikus.repository.SpecialisteRepository;
+
+import java.util.Arrays;
+
+public class DemandeExpertiseService {
+
+    private final DemandeExpertiseRepository demandeRepository = new DemandeExpertiseRepository();
+    private final SpecialisteRepository specialisteRepository = new SpecialisteRepository();
+
+    public DemandeExpertise creer(CreerDemandeRequest req) {
+        if (req == null)
+            throw new BadRequestException("Corps de la requête manquant");
+        if (req.consultationId() == null)
+            throw new BadRequestException("consultationId est obligatoire");
+        if (req.specialisteId() == null)
+            throw new BadRequestException("specialisteId est obligatoire");
+        if (req.question() == null || req.question().isBlank())
+            throw new BadRequestException("La question ne peut pas être vide");
+
+        Priorite priorite = parsePriorite(req.priorite());
+
+        if (!demandeRepository.consultationExists(req.consultationId()))
+            throw new NotFoundException("Consultation introuvable : " + req.consultationId());
+
+        Specialiste specialiste = specialisteRepository.findById(req.specialisteId())
+                .orElseThrow(() -> new NotFoundException("Spécialiste introuvable : " + req.specialisteId()));
+
+        DemandeExpertise d = new DemandeExpertise();
+        d.setConsultationId(req.consultationId());
+        d.setSpecialiste(specialiste);
+        d.setQuestion(req.question().trim());
+        d.setPriorite(priorite);
+        d.setStatut(StatutDemande.EN_ATTENTE);
+        return demandeRepository.save(d);
+    }
+
+    private Priorite parsePriorite(String value) {
+        if (value == null || value.isBlank())
+            throw new BadRequestException("La priorité est obligatoire");
+        try {
+            return Priorite.valueOf(value.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Priorité invalide. Valeurs : " + Arrays.toString(Priorite.values()));
+        }
+    }
+
+    public record CreerDemandeRequest(Long consultationId, Long specialisteId,
+            String question, String priorite) {
+    }
+}
