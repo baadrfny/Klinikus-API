@@ -2,7 +2,7 @@ package ma.klinikus.model;
 import ma.klinikus.model.enums.Specialite;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
+
 
 @Entity
 @Table(name = "specialiste")
@@ -20,7 +20,7 @@ public class Specialiste {
     private Specialite specialite;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal tarif; 
+    private Long tarif; 
 
     public Specialiste() {}
 
@@ -33,6 +33,6 @@ public class Specialiste {
     public Specialite getSpecialite() { return specialite; }
     public void setSpecialite(Specialite specialite) { this.specialite = specialite; }
 
-    public BigDecimal getTarif() { return tarif; }
-    public void setTarif(BigDecimal tarif) { this.tarif = tarif; }
+    public Long getTarif() { return tarif; }
+    public void setTarif(Long tarif) { this.tarif = tarif; }
 }
