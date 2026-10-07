@@ -17,7 +17,7 @@ public class DemandeExpertise {
     private Long consultationId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "specialiste_id", nullable = false)
+    @JoinColumn(name = "specialiste_id", nullable = true)
     private Specialiste specialiste;
 
     @Column(nullable = false, columnDefinition = "TEXT")

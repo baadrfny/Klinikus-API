@@ -6,8 +6,7 @@
 
     <persistence-unit name="klinikusPU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        
-        <class>ma.klinikus.model.Specialiste</class>
+    
         <class>ma.klinikus.model.DemandeExpertise</class>
 
         <properties>

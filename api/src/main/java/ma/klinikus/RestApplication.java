@@ -1,7 +1,9 @@
 package ma.klinikus;
 
 import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ApplicationPath;
 
-public class RestApplication extends Application{
-    
+@ApplicationPath("/")
+public class RestApplication extends Application {
+
 }
