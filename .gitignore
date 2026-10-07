@@ -1,7 +1,11 @@
 api/target/
+=======
+target/
+>>>>>>> a41d334947ea4673270398276f76a73b1201513c
 *.class
 *.log
 .idea/
 api/src/main/resources/META-INF/persistence.xml
 .vscode/
 .env
+api/src/main/resources/META-INF/persistence.xml
