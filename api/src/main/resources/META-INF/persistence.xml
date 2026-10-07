@@ -12,11 +12,10 @@
 
         <properties>
             <!-- PostgreSQL Database Connection -->
-            <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver" />
-            <property name="jakarta.persistence.jdbc.url"
-                value="jdbc:postgresql://localhost:5432/klinikus_db" />
-            <property name="jakarta.persistence.jdbc.user" value="mohamed" />
-            <property name="jakarta.persistence.jdbc.password" value="admin123" />
+            <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/klinikus_db"/>
+            <property name="jakarta.persistence.jdbc.user" value="badr"/>
+            <property name="jakarta.persistence.jdbc.password" value="admin123"/>
 
             <!-- Hibernate Configuration -->
             <property name="hibernate.hbm2ddl.auto" value="update" />
