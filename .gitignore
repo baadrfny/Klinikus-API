@@ -2,6 +2,6 @@ api/target/
 *.class
 *.log
 .idea/
-*.xml
+api/src/main/resources/META-INF/persistence.xml
 .vscode/
 .env
