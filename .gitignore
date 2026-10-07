@@ -5,4 +5,4 @@ target/
 *.iml
 .vscode/
 .env
-*.xml
+api/src/main/resources/META-INF/persistence.xml
