@@ -30,7 +30,14 @@
             <version>${jersey.version}</version>
         </dependency>
 
-        <!-- JSON / Jackson (Explicitly versioned to match jsr310) -->
+        <!-- Bycrypt dependency -->
+        <dependency>
+            <groupId>at.favre.lib</groupId>
+            <artifactId>bcrypt</artifactId>
+            <version>0.10.2</version>
+        </dependency>
+
+        <!-- JSON / Jackson -->
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
