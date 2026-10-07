@@ -1,6 +1,6 @@
 package ma.klinikus.model.enums;
 
-public enum Specialiste {
+public enum Specialite {
     CARDIOLOGIE,
     PNEUMOLOGIE,
     DERMATOLOGIE,
