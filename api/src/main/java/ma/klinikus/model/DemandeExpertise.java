@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import ma.klinikus.model.enums.Priorite;
 import ma.klinikus.model.enums.StatutDemande;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "demandes_expertise")
@@ -59,10 +61,16 @@ public class DemandeExpertise {
         this.consultationId = consultationId;
     }
 
+    @JsonIgnore
     public Specialiste getSpecialiste() {
         return specialiste;
     }
 
+    @JsonProperty("specialisteId")
+    public Long getSpecialisteId() {
+        return specialiste == null ? null : specialiste.getId();
+    }
+    
     public void setSpecialiste(Specialiste specialiste) {
         this.specialiste = specialiste;
     }
