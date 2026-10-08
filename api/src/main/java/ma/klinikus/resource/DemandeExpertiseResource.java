@@ -1,5 +1,6 @@
 package ma.klinikus.resource;
 
+import ma.klinikus.filter.RolesAllowed;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -15,6 +16,7 @@ public class DemandeExpertiseResource {
     private final DemandeExpertiseService service = new DemandeExpertiseService();
 
     @POST
+    @RolesAllowed({ "GENERALISTE" })
     public Response creer(CreerDemandeRequest request) {
         DemandeExpertise d = service.creer(request);
         return Response.status(Response.Status.CREATED).entity(d).build();

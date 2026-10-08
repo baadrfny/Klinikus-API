@@ -12,9 +12,9 @@ public class WebAppExceptionMapper implements ExceptionMapper<WebApplicationExce
     @Override
     public Response toResponse(WebApplicationException e) {
         int status = e.getResponse().getStatus();
-        return Response.status(status)
+        return Response.fromResponse(e.getResponse())
                 .type(MediaType.APPLICATION_JSON)
-                .entity(Map.of("status", status, "erreur", e.getMessage()))
+                .entity(Map.of("status", status, "erreur", String.valueOf(e.getMessage())))
                 .build();
     }
 }
