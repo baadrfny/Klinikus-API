@@ -1,5 +1,6 @@
 package ma.klinikus.resource;
 
+import ma.klinikus.filter.RolesAllowed;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -7,13 +8,13 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import ma.klinikus.model.Specialiste;
-import ma.klinikus.repository.SpecialisteRepository;
 import ma.klinikus.service.SpecialisteService;
 
 import java.util.List;
 import java.util.Map;
 
 @Path("/specialistes")
+@RolesAllowed({ "GENERALISTE", "INFIRMIER" })
 public class SpecialisteResource {
 
     private final SpecialisteService service = new SpecialisteService();

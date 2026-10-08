@@ -27,7 +27,7 @@ public class AuthFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext ctx) {
         RolesAllowed rolesAllowed = findRolesAllowed();
         if (rolesAllowed == null) {
-            return; 
+            throw new ForbiddenException("Endpoint non configuré : accès refusé");
         }
 
         Utilisateur user = authService.authenticate(ctx.getHeaderString(HttpHeaders.AUTHORIZATION));
