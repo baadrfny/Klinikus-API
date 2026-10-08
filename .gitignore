@@ -3,13 +3,3 @@ api/target/
 *.log
 .idea/
 api/src/main/resources/META-INF/persistence.xml
-=======
-target/
-*.class
-*.log
-.idea/
-*.iml
->>>>>>> 29c79b188e58767484f3c74ead1d1b87e0b49cb0
-.vscode/
-.env
-api/src/main/resources/META-INF/persistence.xml
