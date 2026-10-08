@@ -8,6 +8,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import ma.klinikus.model.Specialiste;
 
+
 public class SpecialisteRepository {
 
     private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("klinikusPU");
@@ -30,4 +31,8 @@ public class SpecialisteRepository {
                     .getResultStream().findFirst();
         }
     }
+
+
+
+    
 }

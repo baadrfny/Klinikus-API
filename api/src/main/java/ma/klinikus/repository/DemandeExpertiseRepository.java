@@ -1,5 +1,7 @@
 package ma.klinikus.repository;
 
+import java.util.List;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -33,6 +35,19 @@ public class DemandeExpertiseRepository {
                     .setParameter("id", consultationId)
                     .getSingleResult();
             return n.longValue() > 0;
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<DemandeExpertise> consulterDemandesEnAtt(Long uid) {
+        EntityManager em = EMF.createEntityManager();
+        try {
+            String jpql = "SELECT d FROM DemandeExpertise d JOIN FETCH d.specialiste s  WHERE s.utilisateurId.id = :uid";
+
+            return em.createQuery(jpql, DemandeExpertise.class)
+                    .setParameter("uid", uid)
+                    .getResultList();
         } finally {
             em.close();
         }

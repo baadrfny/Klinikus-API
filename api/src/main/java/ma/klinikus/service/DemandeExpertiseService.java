@@ -10,6 +10,7 @@ import ma.klinikus.repository.DemandeExpertiseRepository;
 import ma.klinikus.repository.SpecialisteRepository;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class DemandeExpertiseService {
 
@@ -55,5 +56,9 @@ public class DemandeExpertiseService {
 
     public record CreerDemandeRequest(Long consultationId, Long specialisteId,
             String question, String priorite) {
+    }
+
+    public List<DemandeExpertise> consulterDemandesEnAtt(Long uid) {
+        return demandeRepository.consulterDemandesEnAtt(uid);
     }
 }
