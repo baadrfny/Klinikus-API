@@ -1,10 +1,12 @@
 package ma.klinikus.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import ma.klinikus.model.enums.Role;
 
 @Entity
-@Table(name = "utilisateur") 
+@Table(name = "utilisateur")
 public class Utilisateur {
 
     @Id
@@ -51,6 +53,7 @@ public class Utilisateur {
         this.email = email;
     }
 
+    @JsonIgnore
     public String getMotDePasse() {
         return motDePasse;
     }
