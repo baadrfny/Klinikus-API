@@ -4,18 +4,14 @@ import java.util.List;
 import java.util.Optional;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import ma.klinikus.model.DemandeExpertise;
 import ma.klinikus.model.enums.Priorite;
 import ma.klinikus.model.enums.StatutDemande;
 
 public class DemandeExpertiseRepository {
 
-    private static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("klinikusPU");
-
     public DemandeExpertise save(DemandeExpertise demandeExpertise) {
-        EntityManager em = EMF.createEntityManager();
+        EntityManager em = JpaUtil.createEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(demandeExpertise);
@@ -31,15 +27,13 @@ public class DemandeExpertiseRepository {
     }
 
     public boolean consultationExists(Long consultationId) {
-        EntityManager em = EMF.createEntityManager();
-        try {
+
+        try (EntityManager em = JpaUtil.createEntityManager();) {
             String sql = "SELECT COUNT(*) FROM consultation WHERE id = :id";
             Number n = (Number) em.createNativeQuery(sql)
                     .setParameter("id", consultationId)
                     .getSingleResult();
             return n.longValue() > 0;
-        } finally {
-            em.close();
         }
     }
 
@@ -73,7 +67,7 @@ public class DemandeExpertiseRepository {
     }
 
     public Optional<DemandeExpertise> findDemandeById(Long id) {
-        try (EntityManager em = EMF.createEntityManager()) {
+        try (EntityManager em = JpaUtil.createEntityManager()) {
             return em.createQuery(
                     "SELECT d FROM DemandeExpertise d JOIN FETCH d.specialiste WHERE d.id = :id",
                     DemandeExpertise.class)
@@ -83,7 +77,7 @@ public class DemandeExpertiseRepository {
     }
 
     public Optional<Long> findProprietaire(Long demandeId) {
-        try (EntityManager em = EMF.createEntityManager()) {
+        try (EntityManager em = JpaUtil.createEntityManager()) {
             return em.createQuery(
                     "SELECT s.utilisateurId.id FROM DemandeExpertise d JOIN d.specialiste s WHERE d.id = :id",
                     Long.class)
@@ -93,7 +87,7 @@ public class DemandeExpertiseRepository {
     }
 
     public DemandeExpertise update(DemandeExpertise demande) {
-        EntityManager em = EMF.createEntityManager();
+        EntityManager em = JpaUtil.createEntityManager();
         try {
             em.getTransaction().begin();
             DemandeExpertise merged = em.merge(demande);
