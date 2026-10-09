@@ -36,4 +36,12 @@ public class SpecialisteResource {
         return Response.ok(specialistes).build();
     }
 
+    @GET 
+    @Path ("/specialite")
+    @Produces (MediaType.APPLICATION_JSON)
+    public Response listerParSpecialite(@PathParam("specialite")String specialite){
+        List<Specialiste> specialistes = service.touverParSpecialite(specialite);
+        return Response.ok(specialistes).build();
+    }
+
 }

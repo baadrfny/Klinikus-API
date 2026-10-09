@@ -1,7 +1,10 @@
 package ma.klinikus.service;
 
 import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Response;
 import ma.klinikus.model.DemandeExpertise;
 import ma.klinikus.model.Specialiste;
 import ma.klinikus.model.enums.Priorite;
@@ -60,5 +63,32 @@ public class DemandeExpertiseService {
 
     public List<DemandeExpertise> consulterDemandesEnAtt(Long uid) {
         return demandeRepository.consulterDemandesEnAtt(uid);
+    }
+
+    public DemandeExpertise repondre(Long id, ReponseRequest req, Long utilisateurId) {
+        DemandeExpertise d = demandeRepository.findDemandeById(id)
+                .orElseThrow(() -> new NotFoundException("Demande introuvable : " + id));
+
+        Long proprietaire = demandeRepository.findProprietaire(id).orElse(null);
+        if (proprietaire == null || !proprietaire.equals(utilisateurId))
+            throw new ForbiddenException("Cette demande est adressee a un autre specialiste");
+
+        if (d.getStatut() == StatutDemande.TERMINEE)
+            throw new ClientErrorException("Demande deja traitee", Response.Status.CONFLICT);
+
+        if (req == null)
+            throw new BadRequestException("Corps de la requete manquant");
+        if (req.avis() == null || req.avis().isBlank())
+            throw new BadRequestException("L'avis ne peut pas etre vide");
+        if (req.recommandations() == null || req.recommandations().isBlank())
+            throw new BadRequestException("Les recommandations ne peuvent pas etre vides");
+
+        d.setAvis(req.avis().trim());
+        d.setRecommandations(req.recommandations().trim());
+        d.setStatut(StatutDemande.TERMINEE);
+        return demandeRepository.update(d);
+    }
+
+    public record ReponseRequest(String avis, String recommandations) {
     }
 }

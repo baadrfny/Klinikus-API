@@ -1,15 +1,16 @@
 package ma.klinikus.resource;
 
 import ma.klinikus.filter.RolesAllowed;
+import ma.klinikus.filter.SecurityContextImpl.UserPrincipal;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import ma.klinikus.model.DemandeExpertise;
 import ma.klinikus.service.DemandeExpertiseService;
 import ma.klinikus.service.DemandeExpertiseService.CreerDemandeRequest;
-import jakarta.ws.rs.core.SecurityContext;
-import ma.klinikus.filter.SecurityContextImpl.UserPrincipal;
+import ma.klinikus.service.DemandeExpertiseService.ReponseRequest;
 
 @Path("/demandes")
 @Produces(MediaType.APPLICATION_JSON)
@@ -35,5 +36,14 @@ public class DemandeExpertiseResource {
         Long uid = principal.getId();
 
         return Response.ok(service.consulterDemandesEnAtt(uid)).build();
+    }
+    @PUT
+    @Path("{id}/reponse")
+    @RolesAllowed({ "SPECIALISTE" })
+
+    public Response response(@PathParam("id") Long id, ReponseRequest request,
+            @Context SecurityContext securityContext) {
+        UserPrincipal principal = (UserPrincipal) securityContext.getUserPrincipal();
+        return Response.ok(service.repondre(id, request, principal.getId())).build();
     }
 }

@@ -17,4 +17,8 @@ public class SpecialisteService {
     public Optional<Specialiste> trouverParId(Long id) {
         return repository.findById(id);
     }
+
+    public List<Specialiste> touverParSpecialite(String specialite) {
+        return repository.findBySpecialite(specialite);
+    }
 }
