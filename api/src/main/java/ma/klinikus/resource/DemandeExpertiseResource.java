@@ -58,4 +58,10 @@ public class DemandeExpertiseResource {
         UserPrincipal principal = (UserPrincipal) securityContext.getUserPrincipal();
         return Response.ok(service.repondre(id, request, principal.getId())).build();
     }
+
+    @GET
+    @RolesAllowed({ "GENERALISTE" })
+    public Response lister(@QueryParam("consultationId") Long consultationId) {
+        return Response.ok(service.listerParConsultation(consultationId)).build();
+    }
 }

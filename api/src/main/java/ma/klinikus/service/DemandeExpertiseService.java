@@ -89,6 +89,14 @@ public class DemandeExpertiseService {
         return demandeRepository.update(d);
     }
 
+    public List<DemandeExpertise> listerParConsultation(Long consultationId) {
+        if (consultationId == null)
+            throw new BadRequestException("consultationId est obligatoire");
+        if (!demandeRepository.consultationExists(consultationId))
+            throw new NotFoundException("Consultation introuvable : " + consultationId);
+        return demandeRepository.findByConsultationId(consultationId);
+    }
+
     public record ReponseRequest(String avis, String recommandations) {
     }
 }

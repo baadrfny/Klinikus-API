@@ -102,4 +102,16 @@ public class DemandeExpertiseRepository {
         }
     }
 
+    public List<DemandeExpertise> findByConsultationId(Long consultationId) {
+        try (EntityManager em = JpaUtil.createEntityManager()) {
+            return em.createQuery(
+                    "SELECT d FROM DemandeExpertise d " +
+                            "JOIN FETCH d.specialiste s JOIN FETCH s.utilisateurId " +
+                            "WHERE d.consultationId = :cid ORDER BY d.dateCreation DESC",
+                    DemandeExpertise.class)
+                    .setParameter("cid", consultationId)
+                    .getResultList();
+        }
+    }
+
 }
