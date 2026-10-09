@@ -26,9 +26,21 @@ public class DemandeExpertiseResource {
         return Response.status(Response.Status.CREATED).entity(d).build();
     }
 
+    @GET
+    @Path("/attente")
+    @RolesAllowed({ "SPECIALISTE" })
+    public Response consulterDemandesEnAtt(@Context SecurityContext securityContext) {
+
+        UserPrincipal principal = (UserPrincipal) securityContext.getUserPrincipal();
+
+        Long uid = principal.getId();
+
+        return Response.ok(service.consulterDemandesEnAtt(uid)).build();
+    }
     @PUT
     @Path("{id}/reponse")
     @RolesAllowed({ "SPECIALISTE" })
+
     public Response response(@PathParam("id") Long id, ReponseRequest request,
             @Context SecurityContext securityContext) {
         UserPrincipal principal = (UserPrincipal) securityContext.getUserPrincipal();
