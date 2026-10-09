@@ -11,8 +11,10 @@ import ma.klinikus.model.enums.Priorite;
 import ma.klinikus.model.enums.StatutDemande;
 import ma.klinikus.repository.DemandeExpertiseRepository;
 import ma.klinikus.repository.SpecialisteRepository;
+import ma.klinikus.service.DemandeExpertiseService.ReponseRequest;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class DemandeExpertiseService {
 
@@ -82,6 +84,14 @@ public class DemandeExpertiseService {
         d.setRecommandations(req.recommandations().trim());
         d.setStatut(StatutDemande.TERMINEE);
         return demandeRepository.update(d);
+    }
+
+    public List<DemandeExpertise> listerParConsultation(Long consultationId) {
+        if (consultationId == null)
+            throw new BadRequestException("consultationId est obligatoire");
+        if (!demandeRepository.consultationExists(consultationId))
+            throw new NotFoundException("Consultation introuvable : " + consultationId);
+        return demandeRepository.findByConsultationId(consultationId);
     }
 
     public record ReponseRequest(String avis, String recommandations) {

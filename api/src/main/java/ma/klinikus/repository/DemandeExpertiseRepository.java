@@ -1,5 +1,6 @@
 package ma.klinikus.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import jakarta.persistence.EntityManager;
@@ -67,6 +68,18 @@ public class DemandeExpertiseRepository {
             throw e;
         } finally {
             em.close();
+        }
+    }
+
+    public List<DemandeExpertise> findByConsultationId(Long consultationId) {
+        try (EntityManager em = JpaUtil.createEntityManager()) {
+            return em.createQuery(
+                    "SELECT d FROM DemandeExpertise d " +
+                            "JOIN FETCH d.specialiste s JOIN FETCH s.utilisateurId " +
+                            "WHERE d.consultationId = :cid ORDER BY d.dateCreation DESC",
+                    DemandeExpertise.class)
+                    .setParameter("cid", consultationId)
+                    .getResultList();
         }
     }
 
