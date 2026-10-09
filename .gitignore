@@ -3,3 +3,5 @@ api/target/
 *.log
 .idea/
 api/src/main/resources/META-INF/persistence.xml
+.vscode/
+.env

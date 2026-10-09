@@ -1,0 +1,60 @@
+{
+  "name": "Klinikus - Local",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/klinikus/api",
+      "enabled": true
+    },
+    {
+      "key": "email",
+      "value": "medecin@klinikus.ma",
+      "enabled": true
+    },
+    {
+      "key": "password",
+      "value": "A_REMPLIR",
+      "enabled": true
+    },
+    {
+      "key": "generaliste_email",
+      "value": "medecin@klinikus.ma",
+      "enabled": true
+    },
+    {
+      "key": "generaliste_password",
+      "value": "A_REMPLIR",
+      "enabled": true
+    },
+    {
+      "key": "specialiste_email",
+      "value": "specialiste@klinikus.ma",
+      "enabled": true
+    },
+    {
+      "key": "specialiste_password",
+      "value": "A_REMPLIR",
+      "enabled": true
+    },
+    {
+      "key": "specialiste2_email",
+      "value": "specialiste2@klinikus.ma",
+      "enabled": true
+    },
+    {
+      "key": "specialiste2_password",
+      "value": "Specialiste123!",
+      "enabled": true
+    },
+    {
+      "key": "infirmier_email",
+      "value": "infirmier@klinikus.ma",
+      "enabled": true
+    },
+    {
+      "key": "infirmier_password",
+      "value": "A_REMPLIR",
+      "enabled": true
+    }
+  ]
+}
