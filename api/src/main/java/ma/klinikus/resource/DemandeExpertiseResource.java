@@ -27,16 +27,28 @@ public class DemandeExpertiseResource {
     }
 
     @GET
-    @Path("/attente")
     @RolesAllowed({ "SPECIALISTE" })
-    public Response consulterDemandesEnAtt(@Context SecurityContext securityContext) {
+    public Response consulterDemandes(
+            @QueryParam("statut") String statut,
+            @Context SecurityContext securityContext) {
 
         UserPrincipal principal = (UserPrincipal) securityContext.getUserPrincipal();
 
         Long uid = principal.getId();
 
+        if (statut == null || statut.isBlank()) {
+            throw new BadRequestException("Le statut est obligatoire");
+        }
+
+        if (!"EN_ATTENTE".equalsIgnoreCase(statut.trim())) {
+            throw new BadRequestException("Statut non supporté");
+        }
+
         return Response.ok(service.consulterDemandesEnAtt(uid)).build();
     }
+
+
+    
     @PUT
     @Path("{id}/reponse")
     @RolesAllowed({ "SPECIALISTE" })
