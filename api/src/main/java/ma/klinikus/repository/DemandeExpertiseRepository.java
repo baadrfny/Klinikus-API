@@ -38,7 +38,7 @@ public class DemandeExpertiseRepository {
     }
 
     public List<DemandeExpertise> consulterDemandesEnAtt(Long uid) {
-        EntityManager em = EMF.createEntityManager();
+        EntityManager em = JpaUtil.createEntityManager();
 
         try {
             String jpql = """
