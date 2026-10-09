@@ -7,7 +7,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import ma.klinikus.model.DemandeExpertise;
-
+import ma.klinikus.model.enums.Priorite;
+import ma.klinikus.model.enums.StatutDemande;
 
 public class DemandeExpertiseRepository {
 
@@ -44,12 +45,28 @@ public class DemandeExpertiseRepository {
 
     public List<DemandeExpertise> consulterDemandesEnAtt(Long uid) {
         EntityManager em = EMF.createEntityManager();
+
         try {
-            String jpql = "SELECT d FROM DemandeExpertise d JOIN FETCH d.specialiste s WHERE s.utilisateurId.id = :uid ORDER BY CASE WHEN d.priorite = 'URGENTE' THEN 0 ELSE 1 END";
+            String jpql = """
+                    SELECT d
+                    FROM DemandeExpertise d
+                    JOIN FETCH d.specialiste s
+                    WHERE s.utilisateurId.id = :uid
+                      AND d.statut = :statut
+                    ORDER BY CASE
+                        WHEN d.priorite = :urgente THEN 0
+                        WHEN d.priorite = :normale THEN 1
+                        ELSE 2
+                    END
+                    """;
 
             return em.createQuery(jpql, DemandeExpertise.class)
                     .setParameter("uid", uid)
+                    .setParameter("statut", StatutDemande.EN_ATTENTE)
+                    .setParameter("urgente", Priorite.URGENTE)
+                    .setParameter("normale", Priorite.NORMALE)
                     .getResultList();
+
         } finally {
             em.close();
         }
