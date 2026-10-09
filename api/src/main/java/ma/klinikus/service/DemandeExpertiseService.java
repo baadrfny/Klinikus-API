@@ -62,6 +62,10 @@ public class DemandeExpertiseService {
             String question, String priorite) {
     }
 
+    public List<DemandeExpertise> consulterDemandesEnAtt(Long uid) {
+        return demandeRepository.consulterDemandesEnAtt(uid);
+    }
+
     public DemandeExpertise repondre(Long id, ReponseRequest req, Long utilisateurId) {
         DemandeExpertise d = demandeRepository.findDemandeById(id)
                 .orElseThrow(() -> new NotFoundException("Demande introuvable : " + id));
