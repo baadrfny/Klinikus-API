@@ -1,1 +1,895 @@
-[]
+{
+  "info": {
+    "name": "Klinikus API",
+    "description": "API de télé-expertise médicale. Authentification HTTP Basic au niveau de la collection ({{email}} / {{password}}), surchargée par rôle sur chaque requête. Importer aussi Klinikus_API.postman_environment.json.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "username",
+        "value": "{{email}}",
+        "type": "string"
+      },
+      {
+        "key": "password",
+        "value": "{{password}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "demandeId",
+      "value": "15"
+    }
+  ],
+  "item": [
+    {
+      "name": "1 - Authentification",
+      "item": [
+        {
+          "name": "POST /auth/login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Identité renvoyée', function () { var j = pm.response.json(); pm.expect(j).to.have.property('role'); pm.expect(j).to.have.property('email'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Utilise l'authentification Basic de la collection ({{email}} / {{password}})."
+          }
+        },
+        {
+          "name": "GET /auth/me",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "2 - Spécialistes",
+      "item": [
+        {
+          "name": "GET /specialistes?specialite=CARDIOLOGIE",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/specialistes?specialite=CARDIOLOGIE",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "specialistes"
+              ],
+              "query": [
+                {
+                  "key": "specialite",
+                  "value": "CARDIOLOGIE"
+                }
+              ]
+            },
+            "description": "Rôle GENERALISTE. Liste des spécialistes d'une spécialité, triée par tarif croissant.",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{generaliste_email}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{generaliste_password}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3 - Demandes",
+      "item": [
+        {
+          "name": "POST /demandes (créer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 201', function () { pm.response.to.have.status(201); });",
+                  "var d = pm.response.json();",
+                  "pm.test('Statut EN_ATTENTE', function () { pm.expect(d.statut).to.eql('EN_ATTENTE'); });",
+                  "pm.collectionVariables.set('demandeId', d.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/demandes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demandes"
+              ]
+            },
+            "description": "Rôle GENERALISTE. Enregistre l'id créé dans la variable {{demandeId}} utilisée par le PUT. specialisteId 3 = specialiste@klinikus.ma.",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{generaliste_email}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{generaliste_password}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"consultationId\": 1,\n  \"specialisteId\": 3,\n  \"question\": \"Question de test\",\n  \"priorite\": \"URGENTE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /demandes?consultationId=2 (généraliste)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Réponse = tableau', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/demandes?consultationId=2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demandes"
+              ],
+              "query": [
+                {
+                  "key": "consultationId",
+                  "value": "2"
+                }
+              ]
+            },
+            "description": "Rôle GENERALISTE. Demandes liées à une consultation (avec avis et recommandations une fois TERMINEE).",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{generaliste_email}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{generaliste_password}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /demandes?statut=EN_ATTENTE (spécialiste)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Réponse = tableau', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/demandes?statut=EN_ATTENTE",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demandes"
+              ],
+              "query": [
+                {
+                  "key": "statut",
+                  "value": "EN_ATTENTE"
+                }
+              ]
+            },
+            "description": "Rôle SPECIALISTE. Uniquement les demandes adressées au spécialiste connecté.",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{specialiste_email}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{specialiste_password}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT /demandes/{{demandeId}}/reponse (répondre)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Statut TERMINEE', function () { pm.expect(pm.response.json().statut).to.eql('TERMINEE'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/demandes/{{demandeId}}/reponse",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demandes",
+                "{{demandeId}}",
+                "reponse"
+              ]
+            },
+            "description": "Rôle SPECIALISTE propriétaire de la demande. Lancer après le POST (la demande créée est adressée à specialiste@klinikus.ma).",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{specialiste_email}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{specialiste_password}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"avis\": \"L'ECG montre une fibrillation auriculaire à réponse ventriculaire rapide. Pas de signe d'ischémie aiguë.\",\n  \"recommandations\": \"Holter ECG sur 24h, échocardiographie transthoracique, bilan thyroïdien et ionogramme. Anticoagulation à discuter selon le score CHA2DS2-VASc.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4 - Cas d'erreur",
+      "item": [
+        {
+          "name": "401 - Sans identifiants",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/demandes?statut=EN_ATTENTE",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demandes"
+              ],
+              "query": [
+                {
+                  "key": "statut",
+                  "value": "EN_ATTENTE"
+                }
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "401 - Mauvais mot de passe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{generaliste_email}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "mauvais_mot_de_passe",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "403 - Infirmier crée une demande",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/demandes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demandes"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{infirmier_email}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{infirmier_password}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"consultationId\": 1,\n  \"specialisteId\": 3,\n  \"question\": \"Question de test\",\n  \"priorite\": \"URGENTE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "403 - Généraliste répond à une demande",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/demandes/6/reponse",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demandes",
+                "6",
+                "reponse"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{generaliste_email}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{generaliste_password}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"avis\": \"L'ECG montre une fibrillation auriculaire à réponse ventriculaire rapide. Pas de signe d'ischémie aiguë.\",\n  \"recommandations\": \"Holter ECG sur 24h, échocardiographie transthoracique, bilan thyroïdien et ionogramme. Anticoagulation à discuter selon le score CHA2DS2-VASc.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "403 - Réponse d'un autre spécialiste",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/demandes/6/reponse",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demandes",
+                "6",
+                "reponse"
+              ]
+            },
+            "description": "La demande 6 est adressée à specialiste@klinikus.ma, appelée par specialiste2.",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{specialiste2_email}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{specialiste2_password}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"avis\": \"L'ECG montre une fibrillation auriculaire à réponse ventriculaire rapide. Pas de signe d'ischémie aiguë.\",\n  \"recommandations\": \"Holter ECG sur 24h, échocardiographie transthoracique, bilan thyroïdien et ionogramme. Anticoagulation à discuter selon le score CHA2DS2-VASc.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "404 - Demande inexistante",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/demandes/9999/reponse",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demandes",
+                "9999",
+                "reponse"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{specialiste_email}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{specialiste_password}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"avis\": \"L'ECG montre une fibrillation auriculaire à réponse ventriculaire rapide. Pas de signe d'ischémie aiguë.\",\n  \"recommandations\": \"Holter ECG sur 24h, échocardiographie transthoracique, bilan thyroïdien et ionogramme. Anticoagulation à discuter selon le score CHA2DS2-VASc.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "400 - Avis vide",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/demandes/11/reponse",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demandes",
+                "11",
+                "reponse"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{specialiste_email}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{specialiste_password}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"avis\": \"  \",\n  \"recommandations\": \"Repos\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "400 - Priorité invalide",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/demandes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demandes"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{generaliste_email}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{generaliste_password}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"consultationId\": 1,\n  \"specialisteId\": 3,\n  \"question\": \"Test\",\n  \"priorite\": \"TRES_URGENTE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "400 - consultationId manquant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/demandes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demandes"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{generaliste_email}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{generaliste_password}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "400 - Statut manquant (spécialiste)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/demandes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demandes"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{specialiste_email}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{specialiste_password}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
