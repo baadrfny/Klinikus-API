@@ -27,41 +27,36 @@ public class DemandeExpertiseResource {
     }
 
     @GET
-    @RolesAllowed({ "SPECIALISTE" })
-    public Response consulterDemandes(
+    @RolesAllowed({ "SPECIALISTE", "GENERALISTE" })
+    public Response lister(
             @QueryParam("statut") String statut,
+            @QueryParam("consultationId") Long consultationId,
             @Context SecurityContext securityContext) {
 
         UserPrincipal principal = (UserPrincipal) securityContext.getUserPrincipal();
 
-        Long uid = principal.getId();
-
-        if (statut == null || statut.isBlank()) {
-            throw new BadRequestException("Le statut est obligatoire");
+        if ("SPECIALISTE".equals(principal.getRole())) {
+            return Response.ok(demandesDuSpecialiste(statut, principal.getId())).build();
         }
-
-        if (!"EN_ATTENTE".equalsIgnoreCase(statut.trim())) {
-            throw new BadRequestException("Statut non supporté");
-        }
-
-        return Response.ok(service.consulterDemandesEnAtt(uid)).build();
+        return Response.ok(service.listerParConsultation(consultationId)).build();
     }
 
-
-    
     @PUT
     @Path("{id}/reponse")
     @RolesAllowed({ "SPECIALISTE" })
-
     public Response response(@PathParam("id") Long id, ReponseRequest request,
             @Context SecurityContext securityContext) {
         UserPrincipal principal = (UserPrincipal) securityContext.getUserPrincipal();
         return Response.ok(service.repondre(id, request, principal.getId())).build();
     }
 
-    @GET
-    @RolesAllowed({ "GENERALISTE" })
-    public Response lister(@QueryParam("consultationId") Long consultationId) {
-        return Response.ok(service.listerParConsultation(consultationId)).build();
+    private java.util.List<DemandeExpertise> demandesDuSpecialiste(String statut, Long uid) {
+        if (statut == null || statut.isBlank()) {
+            throw new BadRequestException("Le statut est obligatoire");
+        }
+        if (!"EN_ATTENTE".equalsIgnoreCase(statut.trim())) {
+            throw new BadRequestException("Statut non supporté");
+        }
+        return service.consulterDemandesEnAtt(uid);
     }
 }
