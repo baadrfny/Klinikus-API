@@ -11,7 +11,6 @@ import ma.klinikus.model.enums.Priorite;
 import ma.klinikus.model.enums.StatutDemande;
 import ma.klinikus.repository.DemandeExpertiseRepository;
 import ma.klinikus.repository.SpecialisteRepository;
-import ma.klinikus.service.DemandeExpertiseService.ReponseRequest;
 
 import java.util.Arrays;
 import java.util.List;
