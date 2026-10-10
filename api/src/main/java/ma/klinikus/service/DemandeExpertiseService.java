@@ -13,6 +13,7 @@ import ma.klinikus.repository.DemandeExpertiseRepository;
 import ma.klinikus.repository.SpecialisteRepository;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 public class DemandeExpertiseService {
@@ -53,7 +54,7 @@ public class DemandeExpertiseService {
         try {
             return Priorite.valueOf(value.trim().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Priorité invalide. Valeurs : " + Arrays.toString(Priorite.values()));
+            throw new BadRequestException("Priorité invalide. Ex: " + Arrays.toString(Priorite.values()));
         }
     }
 
@@ -61,16 +62,24 @@ public class DemandeExpertiseService {
             String question, String priorite) {
     }
 
-    public List<DemandeExpertise> consulterDemandesEnAtt(Long uid) {
-        return demandeRepository.consulterDemandesEnAtt(uid);
+    public List<DemandeExpertise> consulterDemandesEnAtt(Long uid, String statut) {
+        if (statut == null || statut.isBlank())
+            throw new BadRequestException("Le statut est obligatoire");
+        if (!"EN_ATTENTE".equalsIgnoreCase(statut.trim()))
+            throw new BadRequestException("Statut non supporté");
+
+        return demandeRepository.findBySpecialiste(uid)
+                .stream()
+                .filter(d -> d.getStatut() == StatutDemande.EN_ATTENTE)
+                .sorted(Comparator.comparing(DemandeExpertise::getPriorite))
+                .toList();
     }
 
     public DemandeExpertise repondre(Long id, ReponseRequest req, Long utilisateurId) {
         DemandeExpertise d = demandeRepository.findDemandeById(id)
                 .orElseThrow(() -> new NotFoundException("Demande introuvable : " + id));
 
-        Long proprietaire = demandeRepository.findProprietaire(id).orElse(null);
-        if (proprietaire == null || !proprietaire.equals(utilisateurId))
+        if (!d.getSpecialiste().getUtilisateurId().getId().equals(utilisateurId))
             throw new ForbiddenException("Cette demande est adressee a un autre specialiste");
 
         if (d.getStatut() == StatutDemande.TERMINEE)
