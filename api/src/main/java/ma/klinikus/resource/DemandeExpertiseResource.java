@@ -1,6 +1,6 @@
 package ma.klinikus.resource;
 
-import ma.klinikus.filter.RolesAllowed;
+import jakarta.annotation.security.RolesAllowed;
 import ma.klinikus.filter.SecurityContextImpl.UserPrincipal;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
@@ -36,7 +36,7 @@ public class DemandeExpertiseResource {
         UserPrincipal principal = (UserPrincipal) securityContext.getUserPrincipal();
 
         if ("SPECIALISTE".equals(principal.getRole())) {
-            return Response.ok(demandesDuSpecialiste(statut, principal.getId())).build();
+            return Response.ok(service.consulterDemandesEnAtt(principal.getId(), statut)).build();
         }
         return Response.ok(service.listerParConsultation(consultationId)).build();
     }
@@ -45,18 +45,8 @@ public class DemandeExpertiseResource {
     @Path("{id}/reponse")
     @RolesAllowed({ "SPECIALISTE" })
     public Response response(@PathParam("id") Long id, ReponseRequest request,
-            @Context SecurityContext securityContext) {
+                             @Context SecurityContext securityContext) {
         UserPrincipal principal = (UserPrincipal) securityContext.getUserPrincipal();
         return Response.ok(service.repondre(id, request, principal.getId())).build();
-    }
-
-    private java.util.List<DemandeExpertise> demandesDuSpecialiste(String statut, Long uid) {
-        if (statut == null || statut.isBlank()) {
-            throw new BadRequestException("Le statut est obligatoire");
-        }
-        if (!"EN_ATTENTE".equalsIgnoreCase(statut.trim())) {
-            throw new BadRequestException("Statut non supporté");
-        }
-        return service.consulterDemandesEnAtt(uid);
     }
 }

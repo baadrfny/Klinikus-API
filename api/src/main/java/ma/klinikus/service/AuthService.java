@@ -33,7 +33,7 @@ public class AuthService {
             String decoded = new String(
                     Base64.getDecoder().decode(authHeader.substring(BASIC_PREFIX.length()).trim()),
                     StandardCharsets.UTF_8);
-            int sep = decoded.indexOf(':'); // the password may contain ':'
+            int sep = decoded.indexOf(':');
             if (sep < 0) {
                 throw new IllegalArgumentException();
             }
